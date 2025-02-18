@@ -12,7 +12,7 @@ const Home = () => {
         <h2 className="title text-[6rem] mb-[10rem]">歡迎使用D-weather!</h2>
         <div className="flex gap-[6rem]">
           <Link
-            to="/"
+            to="/live-weather"
             className="px-10 py-3  bg-[#b0f4fe] font-semibold text-xl rounded-md"
           >
             查詢城市天氣

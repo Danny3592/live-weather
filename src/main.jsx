@@ -5,11 +5,16 @@ import App from './App.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import MainHeader from './layout/MainHeader.jsx';
 import Home from './pages/Home.jsx';
+import WeatherApp from './pages/weatherApp.jsx';
 
 const routes = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
+  },
+  {
+    path: '/live-weather',
+    element: <WeatherApp />,
   },
 ]);
 
