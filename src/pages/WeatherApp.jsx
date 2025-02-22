@@ -1,63 +1,61 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 //ICON
-import { FaCloudRain } from 'react-icons/fa';
 import { FaUmbrella } from 'react-icons/fa';
+import { FaCloud } from 'react-icons/fa';
+import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
+
 //REDUX
-import { get_data } from '../store/Reducers/dataReducer';
+import {
+  get_cityData,
+  get_townData,
+  setCity,
+  setTown,
+  setWeatherOfCity,
+  setLocations,
+} from '../store/Reducers/dataReducer';
+
 //UTILITIES
 import { alertError } from '../../util/sweetAlert';
-import { myLog } from '../../util/util';
+import { getPara, getTime, getWeatherIcon } from '../../util/util';
+
 //COMPONENT
 import Loading from '../components/Loading';
-import moment from 'moment/moment';
+
+//CSS
+import classes from './WeatherApp.module.css';
 
 const WeatherApp = () => {
-
   const dispatch = useDispatch();
-  const { data, loading, successMsg, errorMsg } = useSelector(
-    (state) => state.data,
-  );
 
-  //天氣資訊 state
-  const [weatherData, setWeatherData] = useState({});
+  const {
+    loading,
+    successMsg,
+    errorMsg,
 
-  //輸入地區資料state
-  const [address, setAddress] = useState('臺北市');
-  const [locations, setLocations] = useState([]);
+    city,
+    town,
+    cityData,
+    townData,
+    locations,
+    weatherDataOfCity, //最後要輸出的值
+    weatherDataOfDistrict, //最後要輸出的值
+  } = useSelector((state) => state.data);
 
+
+  //初始化資料
   useEffect(() => {
-    if (!data.records) {
-      dispatch(get_data());
-    }
-  }, [dispatch, data?.records]);
-
+    dispatch(get_cityData('臺北市'));
+    dispatch(get_townData());
+  }, []);
+  //取得城市天氣預報
   useEffect(() => {
-    // console.log(locations);
-    // console.log(`目前的選擇是 ${address}`);
-    // console.log('weatherData = ', weatherData);
-  }, [weatherData]);
-
-  function handleSubmit() {
-    if (data?.records) {
-      //取得台灣每個地點
-
-      const locationSet = data.records.location.map(
-        (item) => item.locationName,
-      );
-      if (!locationSet.includes(address)) {
-        alertError('請輸入正確的城市名稱');
-        setAddress('');
-        return;
-      }
-
-      const detailData = data.records.location.filter(
-        (item) => item.locationName === address,
-      )[0]?.weatherElement;
+    if (cityData?.records) {
+      const detailData = cityData?.records?.location?.filter((item) => {
+        return item.locationName === city;
+      })[0]?.weatherElement;
 
       if (detailData) {
-        console.log('detailData = ', detailData);
-
         const dataElement = detailData.slice(0, 5).map((item) => item?.time);
         const [
           weatherCondition,
@@ -67,114 +65,218 @@ const WeatherApp = () => {
           maxTemperature,
         ] = dataElement;
 
-        myLog({weatherCondition})
         // console.log('weatherCondition = ', weatherCondition);
         // console.log('rainProbability = ', rainProbability);
         // console.log('minTemperature = ', minTemperature);
-        // console.log('maxTemperature = ', maxTemperature);
         // console.log('comfortIndex = ', comfortIndex);
+        // console.log('maxTemperature = ', maxTemperature);
 
-        const momentDate = moment().format('YYYY-MM-DD HH:mm:ss');
-        myLog({momentDate})
-        
-
-
-        setLocations(locationSet);
-        // setWeatherData({
-        //   weatherConditionSet,
-        //   rainProbabilitySet,
-        //   minTemperatureSet,
-        //   maxTemperatureSet,
-        //   comfortIndexSet,
-        // });
+        //================================================
+        const weatherOfCity = {
+          currentCity: city,
+          weatherCondition: getPara(weatherCondition),
+          weatherConditionIcon: getWeatherIcon(getPara(weatherCondition)),
+          rainProbability: getPara(rainProbability),
+          minTemperature: getPara(minTemperature),
+          maxTemperature: getPara(maxTemperature),
+          comfortIndex: getPara(comfortIndex),
+          time: getTime(weatherCondition),
+        };
+        // console.log(weatherOfCity);
+        dispatch(setWeatherOfCity(weatherOfCity));
+        // dispatch()
       }
     }
+  }, [city, cityData]);
+  //取得行政區天氣資料
+  useEffect(() => {
+    if (townData?.records?.Station) {
+      const districtsData = townData?.records?.Station.filter((item) => {
+        return item.GeoInfo.CountyName === city;
+      });
+      const districts = Array.from(
+        new Set(
+          districtsData.map((item) => {
+            return item.GeoInfo.TownName;
+          }),
+        ),
+      );
+      dispatch(setLocations({ name: 'districts', value: districts }));
+    }
+  }, [city, weatherDataOfCity, townData]);
+
+
+
+  function handleSubmit(para) {
+    if (para === 'city') {
+      // handleCityData();
+      return;
+    }
+    handleTownData();
   }
+
+  function handleTownData() {}
+
+  // if (loading) return <Loading />; // 先確保尚未載入時不會進入下方
+  // if (!weatherDataOfCity || !weatherDataOfCity.time) {
+  //   return <div>資料尚未就緒</div>;
+  // }
 
   return (
     <>
-      {loading && <Loading />}
+      {loading ||
+      !weatherDataOfCity?.time ||
+      !locations?.cities ||
+      !locations?.districts ? (
+        <Loading />
+      ) : (
+        <div className="flex justify-center items-center mt-20 flex-col gap-3 mx-auto max-w-[1000px]">
+          <div className="top flex gap-4">
+            <div className="left w-[300px] h-[300px] bg-[#83838362] rounded-md flex justify-center items-start p-6 flex-col">
+              <h4 className="text-xl mb-3 font-bold">搜尋地區</h4>
+              <div className="font-bold text-xl relative">
+                <div className=" absolute top-1 pointer-events-none   right-2">
+                  <MdOutlineKeyboardArrowDown className="text-[2.5rem]" />
+                </div>
+                <label htmlFor="cities">選擇縣市</label>
+                <select
+                  name="cities"
+                  id="cities"
+                  className="bg-[#dedc55] px-5 py-3 pr-15 rounded-md ml-5 hover:cursor-pointer"
+                  onChange={(e) => dispatch(setCity(e.target.value))}
+                  value={city}
+                >
+                  {locations.cities?.map((item) => {
+                    return (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <button
+                onClick={() => handleSubmit('city')}
+                className="mt-15 px-5 py-2 bg-[#f6c79c]
+            rounded-lg hover:cursor-pointer hover:bg-[#f9eee3] shadow-lg"
+              >
+                送出
+              </button>
+            </div>
 
-      <div className="flex justify-center items-center mt-20 flex-col gap-3 mx-auto max-w-[1000px]">
-        <div className="top flex gap-4">
-          <div className="left w-[300px] h-[300px] bg-[#83838362] rounded-md flex justify-center items-start p-6 flex-col">
-            <h4 className="text-xl mb-3">搜尋地區</h4>
-            <input
-              onChange={(e) => setAddress(e.target.value)}
-              value={address}
-              type="text"
-              name="address"
-              placeholder="請輸入地區名稱"
-              className="border border-2 bg-white rounded-md py-1 pl-1"
-            />
-
-            <button
-              onClick={handleSubmit}
-              className="mt-15 px-5 py-2 bg-[#f6c79c]
-          rounded-lg hover:cursor-pointer hover:bg-[#f9eee3]"
-            >
-              送出
-            </button>
+            <div className="right w-[600px] h-[300px] bg-[#83838362] rounded-md ">
+              <div className="flex h-[100%] justify-center">
+                {cityData
+                  ? Array(3)
+                      .fill(null)
+                      .map((_, index) => {
+                        return (
+                          <div
+                            key={index}
+                            className={`${classes['weather-col']} flex flex-col  text-center justify-center items-center w-100  hover:bg-[#83838392]`}
+                          >
+                            <div>
+                              <h4 className="text-md">
+                                {weatherDataOfCity?.time?.startDate?.[index] &&
+                                weatherDataOfCity?.time?.endDate?.[index]
+                                  ? weatherDataOfCity?.time?.startDate[
+                                      index
+                                    ] === weatherDataOfCity.time.endDate[index]
+                                    ? weatherDataOfCity.time.startDate[index]
+                                    : `${weatherDataOfCity.time.startDate[index]} ~ ${weatherDataOfCity.time.endDate[index]}`
+                                  : '尚未有資料'}
+                              </h4>
+                              <p className="text-md mt-3">
+                                {weatherDataOfCity?.time?.startTime?.[index] &&
+                                weatherDataOfCity?.time?.endTime?.[index]
+                                  ? `${weatherDataOfCity?.time?.startTime[index]} ~ ${weatherDataOfCity?.time?.endTime[index]}`
+                                  : '尚未有資料'}
+                              </p>
+                              <div className="flex justify-center">
+                                {/* 修正 weatherConditionIcon 的顯示 */}
+                                {weatherDataOfCity.weatherConditionIcon?.[
+                                  index
+                                ] || <FaCloud className="text-[3rem] mt-3" />}
+                              </div>
+                              <div className="flex justify-center">
+                                <p className="mt-8">
+                                  {weatherDataOfCity.minTemperature?.[index]}° -{' '}
+                                  {weatherDataOfCity.maxTemperature?.[index]}°
+                                </p>
+                              </div>
+                              <div className="flex mt-6 items-center justify-center">
+                                <FaUmbrella className="mr-3" />
+                                {weatherDataOfCity.rainProbability?.[index] ||
+                                  0}
+                                %
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                  : '沒有資料'}
+              </div>
+            </div>
           </div>
-
-          <div className="right w-[600px] h-[300px] bg-[#83838362] rounded-md ">
-            <div className="flex h-[100%] justify-center">
-              <div className="flex flex-col items-center w-100 pt-5 hover:bg-[#83838392]">
-                <h4 className="text-md">今日白天</h4>
-                <p className="text-md  mt-3">6:00~18:00</p>
-                <FaCloudRain className="text-[3rem] mt-3" />
-                <p className="mt-8">14°-16°</p>
-                <div className="flex mt-6">
-                  <FaUmbrella className="mr-3" />
-                  120%
-                </div>
+          <div className="bottom flex w-[100%] h-100 bg-[#83838362] rounded-md items-center mb-10  justify-around gap-10">
+            <div className="left flex flex-col gap-5 w-1/3 justify-center items-start pl-20">
+              <div>
+                <h4 className="text-[2rem] inline-block">選擇縣市:</h4>
+                <p className="text-[2rem] inline-block font-bold">
+                  {weatherDataOfCity?.currentCity}
+                </p>
               </div>
-
-              <div className="h-[100%] w-[1px] bg-white"></div>
-
-              <div className="flex flex-col items-center w-100 pt-5 hover:bg-[#83838392]">
-                <h4 className="text-md">今晚明晨</h4>
-                <p className="text-md mt-3">18:00~6:00</p>
-                <FaCloudRain className="text-[3rem] mt-3" />
-                <p className="mt-8">14°-16°</p>
-                <div className="flex mt-6">
-                  <FaUmbrella className="mr-3" />
-                  120%
-                </div>
+              <div>
+                <h4 className="text-[2rem] inline-block">目前舒適度:</h4>
+                <p className="text-[2rem] inline-block font-bold">
+                  {weatherDataOfCity?.comfortIndex[0]}
+                </p>
               </div>
-              <div className="h-[100%] w-[1px] bg-white"></div>
+              <div>
+                <h4 className="text-[2rem] inline-block">目前天氣:</h4>
+                <p className="text-[2rem] inline-block font-bold">
+                  {weatherDataOfCity?.weatherCondition[0]}
+                </p>
+              </div>
+            </div>
 
-              <div className="flex flex-col items-center w-100 pt-5 hover:bg-[#83838392]">
-                <h4 className="text-md">明日白天</h4>
-                <p className="text-md mt-3">6:00~18:00</p>
-                <FaCloudRain className="text-[3rem] mt-3" />
-                <p className="mt-8">14°-16°</p>
-                <div className="flex mt-6">
-                  <FaUmbrella className="mr-3" />
-                  120%
+            <div className="right  flex flex-col gap-5  w-2/3 justify-center items-center h-full pt-5">
+              <div className="font-bold text-xl relative ">
+                <div className=" absolute top-1 pointer-events-none   right-2">
+                  <MdOutlineKeyboardArrowDown className="text-[2.5rem]" />
                 </div>
+                <label htmlFor="towns">選擇區域</label>
+                <select
+                  name="towns"
+                  id="towns"
+                  className="bg-[#dedc55] px-5 py-3 pr-15 rounded-md ml-5 hover:cursor-pointer"
+                  onChange={(e) => dispatch(setTown(e.target.value))}
+                  value={town}
+                >
+                  {locations?.districts.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="h-[80%] bg-[#c6dd55] w-[80%] m-5 rounded-lg relative p-2">
+                <div>
+                  <h4 className="text-[1.5rem] inline-block">目前天氣:</h4>
+                  <p className="text-[1.5rem] inline-block font-bold"></p>
+                </div>
+                <button
+                  onClick={() => handleSubmit('town')}
+                  className="mt-15 px-5 py-2 bg-[#f6c79c]
+                  rounded-lg hover:cursor-pointer hover:bg-[#f9eee3] absolute bottom-5 right-5 shadow-lg"
+                >
+                  送出
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="bottom flex gap-3 w-[100%] h-100 bg-[#83838362] rounded-md  flex justify-start items-start p-6 ">
-          <div className="left">
-            <div>
-              <h4 className="text-[2rem] inline-block">選擇地區:</h4>
-              <p className="text-[2rem] inline-block font-bold">臺北市</p>
-            </div>
-            <div>
-              <h4 className="text-[2rem] inline-block">當前溫度:</h4>
-              <p className="text-[2rem] inline-block font-bold">臺北市</p>
-            </div>
-            <div>
-              <h4 className="text-[2rem] inline-block">選擇地區:</h4>
-              <p className="text-[2rem] inline-block font-bold">臺北市</p>
-            </div>
-          </div>
-          <div className="right"></div>
-        </div>
-      </div>
+      )}
     </>
   );
 };

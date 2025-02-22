@@ -18,16 +18,6 @@ const MainHeader = () => {
             </li>
             <li>
               <NavLink
-                to="/user/login"
-                className={({ isActive }) =>
-                  isActive ? 'text-red-500  text-[2.5rem]' : 'text-[2.5rem]'
-                }
-              >
-                Login
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
                 to="/user/weather"
                 className={({ isActive }) =>
                   isActive ? 'text-red-500 text-[2.5rem]' : 'text-[2.5rem]'
