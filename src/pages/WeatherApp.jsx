@@ -7,10 +7,13 @@ import { FaUmbrella } from 'react-icons/fa';
 import { get_data } from '../store/Reducers/dataReducer';
 //UTILITIES
 import { alertError } from '../../util/sweetAlert';
+import { myLog } from '../../util/util';
 //COMPONENT
 import Loading from '../components/Loading';
+import moment from 'moment/moment';
 
 const WeatherApp = () => {
+
   const dispatch = useDispatch();
   const { data, loading, successMsg, errorMsg } = useSelector(
     (state) => state.data,
@@ -30,9 +33,9 @@ const WeatherApp = () => {
   }, [dispatch, data?.records]);
 
   useEffect(() => {
-    console.log(locations);
-    console.log(`目前的選擇是 ${address}`);
-    console.log('weatherData = ', weatherData);
+    // console.log(locations);
+    // console.log(`目前的選擇是 ${address}`);
+    // console.log('weatherData = ', weatherData);
   }, [weatherData]);
 
   function handleSubmit() {
@@ -53,24 +56,28 @@ const WeatherApp = () => {
       )[0]?.weatherElement;
 
       if (detailData) {
-        console.log('detailData = ',detailData);
+        console.log('detailData = ', detailData);
 
         const dataElement = detailData.slice(0, 5).map((item) => item?.time);
         const [
           weatherCondition,
           rainProbability,
           minTemperature,
-          maxTemperature,
           comfortIndex,
+          maxTemperature,
         ] = dataElement;
 
-        console.log('weatherCondition = ', weatherCondition);
-        console.log('rainProbability = ', rainProbability);
-        console.log('minTemperature = ', minTemperature);
-        console.log('maxTemperature = ', maxTemperature);
-        console.log('comfortIndex = ', comfortIndex);
+        myLog({weatherCondition})
+        // console.log('weatherCondition = ', weatherCondition);
+        // console.log('rainProbability = ', rainProbability);
+        // console.log('minTemperature = ', minTemperature);
+        // console.log('maxTemperature = ', maxTemperature);
+        // console.log('comfortIndex = ', comfortIndex);
 
+        const momentDate = moment().format('YYYY-MM-DD HH:mm:ss');
+        myLog({momentDate})
         
+
 
         setLocations(locationSet);
         // setWeatherData({

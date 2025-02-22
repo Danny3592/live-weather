@@ -6,11 +6,18 @@ export const get_data = createAsyncThunk(
   'data/get_data',
   async function (info, { rejectWithValue, fulfillWithValue }) {
     try {
-      const { data } = await axios(
+      const { data:oneDayData } = await axios(
         'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-72F6D7B5-B618-428B-8BB8-CC0BF7ACFBAA',
       );
-      console.log(data);
-      return fulfillWithValue(data);
+
+
+//其他資料
+      // const { data:newData } = await axios(
+      //   'https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWA-72F6D7B5-B618-428B-8BB8-CC0BF7ACFBAA',
+      // );
+
+      // console.log(oneDayData);
+      return fulfillWithValue(oneDayData);
     } catch (error) {
       alertError(error);
       return rejectWithValue(error);
@@ -30,7 +37,6 @@ const dataReducer = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(get_data.fulfilled, (state, { payload }) => {
-        console.log('payload = ', payload);
         state.data = payload;
         state.successMsg = payload?.message;
         state.loading = false;
