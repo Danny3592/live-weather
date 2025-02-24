@@ -1,8 +1,22 @@
-# React + Vite
+# 使用技術
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 主要框架
 
-Currently, two official plugins are available:
+React ^19.0.0
+React DOM ^19.0.0
+React Router ^7.1.5
+React Router DOM ^7.1.5
+Redux Toolkit ^2.5.1
+React Redux ^9.2.0
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 樣式
+
+Tailwind CSS ^4.0.6
+Tailwind Vite 插件 ^4.0.6
+React Icons ^5.4.0
+
+## 工具函式庫
+
+Axios ^1.7.9
+Moment.js ^2.30.1
+SweetAlert2 ^11.17.2
