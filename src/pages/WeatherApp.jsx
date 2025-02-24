@@ -191,11 +191,11 @@ const WeatherApp = () => {
             </div>
 
             <div className="right  flex flex-col gap-5  w-2/3 justify-center items-center h-full pt-5">
-              <div className='w-[450px]  rounded-md border border-[#bc5555] border-[15px] overflow-hidden'>
+              <div  className='w-[450px]  p-10 rounded-xl bg-[#ffffff6a]'>
                 <img
                   src={`../../public/images/${city}.jpg`}
                   alt=""
-                  className="w-full h-full rounded-md" 
+                  className="w-full rounded-xl " 
                 />
               </div>
             </div>

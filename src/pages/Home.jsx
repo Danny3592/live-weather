@@ -13,15 +13,9 @@ const Home = () => {
         <div className="flex gap-[6rem]">
           <Link
             to="/user/weather"
-            className="px-10 py-3  bg-[#b0f4fe] font-semibold text-xl rounded-md"
+            className="px-10 py-3  bg-[#b0f4fe] font-semibold text-xl rounded-md hover:bg-[#8fc6cf] transition-all duration-300"
           >
             查詢城市天氣
-          </Link>
-          <Link
-            to="/"
-            className="px-10 py-3  bg-[#b0f4fe] font-semibold text-xl rounded-md"
-          >
-            登入
           </Link>
         </div>
       </div>
