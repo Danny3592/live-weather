@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+// 把區域部分修掉
+
+import { useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 //ICON
 import { FaUmbrella } from 'react-icons/fa';
@@ -8,15 +10,13 @@ import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 //REDUX
 import {
   get_cityData,
-  get_townData,
   setCity,
-  setTown,
   setWeatherOfCity,
-  setLocations,
+
+
 } from '../store/Reducers/dataReducer';
 
 //UTILITIES
-import { alertError } from '../../util/sweetAlert';
 import { getPara, getTime, getWeatherIcon } from '../../util/util';
 
 //COMPONENT
@@ -25,28 +25,20 @@ import Loading from '../components/Loading';
 //CSS
 import classes from './WeatherApp.module.css';
 
+
 const WeatherApp = () => {
   const dispatch = useDispatch();
-
   const {
     loading,
-    successMsg,
-    errorMsg,
-
     city,
-    town,
     cityData,
-    townData,
     locations,
     weatherDataOfCity, //最後要輸出的值
-    weatherDataOfDistrict, //最後要輸出的值
   } = useSelector((state) => state.data);
-
 
   //初始化資料
   useEffect(() => {
     dispatch(get_cityData('臺北市'));
-    dispatch(get_townData());
   }, []);
   //取得城市天氣預報
   useEffect(() => {
@@ -54,7 +46,6 @@ const WeatherApp = () => {
       const detailData = cityData?.records?.location?.filter((item) => {
         return item.locationName === city;
       })[0]?.weatherElement;
-
       if (detailData) {
         const dataElement = detailData.slice(0, 5).map((item) => item?.time);
         const [
@@ -88,46 +79,12 @@ const WeatherApp = () => {
       }
     }
   }, [city, cityData]);
-  //取得行政區天氣資料
-  useEffect(() => {
-    if (townData?.records?.Station) {
-      const districtsData = townData?.records?.Station.filter((item) => {
-        return item.GeoInfo.CountyName === city;
-      });
-      const districts = Array.from(
-        new Set(
-          districtsData.map((item) => {
-            return item.GeoInfo.TownName;
-          }),
-        ),
-      );
-      dispatch(setLocations({ name: 'districts', value: districts }));
-    }
-  }, [city, weatherDataOfCity, townData]);
-
-
-
-  function handleSubmit(para) {
-    if (para === 'city') {
-      // handleCityData();
-      return;
-    }
-    handleTownData();
-  }
-
-  function handleTownData() {}
-
-  // if (loading) return <Loading />; // 先確保尚未載入時不會進入下方
-  // if (!weatherDataOfCity || !weatherDataOfCity.time) {
-  //   return <div>資料尚未就緒</div>;
-  // }
 
   return (
     <>
       {loading ||
       !weatherDataOfCity?.time ||
-      !locations?.cities ||
-      !locations?.districts ? (
+      !locations?.cities ? (
         <Loading />
       ) : (
         <div className="flex justify-center items-center mt-20 flex-col gap-3 mx-auto max-w-[1000px]">
@@ -155,13 +112,6 @@ const WeatherApp = () => {
                   })}
                 </select>
               </div>
-              <button
-                onClick={() => handleSubmit('city')}
-                className="mt-15 px-5 py-2 bg-[#f6c79c]
-            rounded-lg hover:cursor-pointer hover:bg-[#f9eee3] shadow-lg"
-              >
-                送出
-              </button>
             </div>
 
             <div className="right w-[600px] h-[300px] bg-[#83838362] rounded-md ">
@@ -241,37 +191,12 @@ const WeatherApp = () => {
             </div>
 
             <div className="right  flex flex-col gap-5  w-2/3 justify-center items-center h-full pt-5">
-              <div className="font-bold text-xl relative ">
-                <div className=" absolute top-1 pointer-events-none   right-2">
-                  <MdOutlineKeyboardArrowDown className="text-[2.5rem]" />
-                </div>
-                <label htmlFor="towns">選擇區域</label>
-                <select
-                  name="towns"
-                  id="towns"
-                  className="bg-[#dedc55] px-5 py-3 pr-15 rounded-md ml-5 hover:cursor-pointer"
-                  onChange={(e) => dispatch(setTown(e.target.value))}
-                  value={town}
-                >
-                  {locations?.districts.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="h-[80%] bg-[#c6dd55] w-[80%] m-5 rounded-lg relative p-2">
-                <div>
-                  <h4 className="text-[1.5rem] inline-block">目前天氣:</h4>
-                  <p className="text-[1.5rem] inline-block font-bold"></p>
-                </div>
-                <button
-                  onClick={() => handleSubmit('town')}
-                  className="mt-15 px-5 py-2 bg-[#f6c79c]
-                  rounded-lg hover:cursor-pointer hover:bg-[#f9eee3] absolute bottom-5 right-5 shadow-lg"
-                >
-                  送出
-                </button>
+              <div className='w-[450px]  rounded-md border border-[#bc5555] border-[15px] overflow-hidden'>
+                <img
+                  src={`../../public/images/${city}.jpg`}
+                  alt=""
+                  className="w-full h-full rounded-md" 
+                />
               </div>
             </div>
           </div>

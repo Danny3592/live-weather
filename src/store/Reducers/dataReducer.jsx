@@ -57,7 +57,7 @@ const dataReducer = createSlice({
     errorMsg: '',
     loading: false,
     city: '臺北市',
-    town: '',
+    town: '北投區',
     locations: {},
     cityData: {},
     townData: {},
@@ -76,6 +76,7 @@ const dataReducer = createSlice({
       state.weatherDataOfCity = payload;
     },
     setWeatherOfDistrict: (state, { payload }) => {
+      console.log('payload = ',payload);
       state.weatherDataOfDistrict = payload;
     },
     setLocations: (state, { payload }) => {
