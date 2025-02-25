@@ -10,7 +10,7 @@ const MainHeader = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  isActive ? 'text-red-500 text-[5.5rem]' : 'text-[2.5rem]'
+                  isActive ? 'text-red-500 text-[2.5rem]' : 'text-[2.5rem]'
                 }
               >
                 Home
@@ -23,7 +23,7 @@ const MainHeader = () => {
                   isActive ? 'text-red-500 text-[2.5rem]' : 'text-[2.5rem]'
                 }
               >
-                Weather
+                WeatherApp
               </NavLink>
             </li>
           </ul>

@@ -6,12 +6,12 @@ html,body{
   font-family:'Rubik',sans-serif ;
   padding: 0;
   margin: 0;
-  background: linear-gradient(to right, #a8e0ff, #8ee3f5) no-repeat center / cover;
+  background: linear-gradient(to right, #a8e0ff, #cbecf4) no-repeat center / cover;
 }
 
 @layer base {
   a {
-    color: unset; /* 讓 `NavLink` 的 `text-red` 生效 */
-    text-decoration: none; /* 避免預設的底線影響 */
+    color: unset; 
+    text-decoration: none; 
   }
 }
