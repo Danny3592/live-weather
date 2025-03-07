@@ -1,7 +1,4 @@
 import { MoonLoader } from 'react-spinners';
-
-//  ;
-
 const Loading = () => {
   return (
     <div className="absolute top-0 left-0 bg-[#d6d1edd8] w-full h-[120%] flex items-center justify-center z-10">

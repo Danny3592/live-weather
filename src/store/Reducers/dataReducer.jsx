@@ -5,13 +5,10 @@ import { alertError } from '../../../util/sweetAlert';
 export const get_cityData = createAsyncThunk(
   'data/get_cityData',
   async function (city, { rejectWithValue, fulfillWithValue }) {
-    // console.log('city = ',city);
-
     try {
       const { data: cityData } = await axios(
         'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWA-72F6D7B5-B618-428B-8BB8-CC0BF7ACFBAA',
       );
-      // console.log('cityData = ', cityData);
 
       if (cityData?.records) {
         //取得台灣每個地點
@@ -72,7 +69,6 @@ const dataReducer = createSlice({
       state.town = payload;
     },
     setWeatherOfCity: (state, { payload }) => {
-      // console.log('pass');
       state.weatherDataOfCity = payload;
     },
     setWeatherOfDistrict: (state, { payload }) => {
