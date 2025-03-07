@@ -1,4 +1,4 @@
-// 把區域部分修掉
+
 
 import { useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,13 +56,7 @@ const WeatherApp = () => {
           maxTemperature,
         ] = dataElement;
 
-        // console.log('weatherCondition = ', weatherCondition);
-        // console.log('rainProbability = ', rainProbability);
-        // console.log('minTemperature = ', minTemperature);
-        // console.log('comfortIndex = ', comfortIndex);
-        // console.log('maxTemperature = ', maxTemperature);
 
-        //================================================
         const weatherOfCity = {
           currentCity: city,
           weatherCondition: getPara(weatherCondition),
@@ -73,9 +67,9 @@ const WeatherApp = () => {
           comfortIndex: getPara(comfortIndex),
           time: getTime(weatherCondition),
         };
-        // console.log(weatherOfCity);
+    
         dispatch(setWeatherOfCity(weatherOfCity));
-        // dispatch()
+  
       }
     }
   }, [city, cityData]);
@@ -143,7 +137,6 @@ const WeatherApp = () => {
                                   : '尚未有資料'}
                               </p>
                               <div className="flex justify-center">
-                                {/* 修正 weatherConditionIcon 的顯示 */}
                                 {weatherDataOfCity.weatherConditionIcon?.[
                                   index
                                 ] || <FaCloud className="text-[3rem] mt-3" />}

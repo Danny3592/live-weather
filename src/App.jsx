@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MainHeader from './layout/MainHeader.jsx';
 import Home from './pages/Home.jsx';
-import WeatherApp from './pages/weatherApp.jsx';
+import WeatherApp from './pages/WeatherApp.jsx';
 import { Provider } from 'react-redux';
 import store from './store/store.jsx';
 
